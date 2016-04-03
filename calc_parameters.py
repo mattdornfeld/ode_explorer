@@ -123,15 +123,20 @@ def calc_spatial_parameters(s, dx = 0.00001):
 
 	return a, b
 
-def calc_parameters(p, r_front, r_back, alpha, omega, nm, R):
+def calc_parameters(p, r_front, r_back, omega_d, Gamma, alpha, omega, nm):
 	ce = r_pharynx**2 / r_front**2 
 	cc = r_front**2 / r_trachea**2
 	cf = r_back**2 / r_front**2
 	le = l / np.sqrt(cf)
+	ce=1
 	mu = ce*le + 0.5
 	gamma = ce**2 * (1 - cc**2)
-	zeta = R * ce * le
 
+	#zeta = R * ce * le
+
+	u0_star = np.sqrt( 2 * p / gamma ) 
+	print(2 * u0_star * L / r_front)
+	omega_d = 2 * u0_star * L / r_front * omega_d
 
 	a, b = calc_spatial_parameters(alpha + j*omega)
 
@@ -144,7 +149,7 @@ def calc_parameters(p, r_front, r_back, alpha, omega, nm, R):
 	beta = (2 * np.sqrt(omega**2 - alpha**2) 
 		* sin( 0.5 * arctan( 2*alpha*omega / (omega**2 - alpha**2) ) ) )
 
-	return (nm, p, mu, gamma, zeta, alpha, omega, beta, A, B, M)
+	return nm, p, mu, gamma, alpha, omega, omega_d, Gamma, beta, A, B, M
 
 def calc_parameters2(p, mu, gamma, alpha, omega, nm, zeta):
 	a, b = calc_spatial_parameters(alpha + j*omega)
@@ -169,4 +174,4 @@ if __name__ == "__main__":
 	zeta = 1.1
 	s = calc_spatial_evs(r_mouth=r_mouth/L, nm=nm, num_seeds=100, max_x=20, max_y=3)
 	params = calc_parameters(p, r_front, r_back, s.imag, s.real, nm, zeta)
-	nm, p, mu, gamma, zeta, alpha, omega, beta, A, B, M = params
+	nm, p, mu, gamma, zeta, alpha, omega, omega_d, Gamma, beta, A, B, M = params
